@@ -1,0 +1,1 @@
+Swappable Kafka sink implementations - added in the exactly-once phase
