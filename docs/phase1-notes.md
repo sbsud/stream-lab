@@ -81,3 +81,5 @@ Topic: __consumer_offsets	Partition: 0	Leader: 1	Replicas: 1	Isr: 1	Elr: 	LastKn
 ```
 Note the Leader: 1 and Replicas:1.
 Leader: 1 means broker 1 owns it and it can serve. Leader: none or Leader: -1 means no broker could take it.
+
+Flink taskmanagers do not need an external port-mapping as the taskmanager communicates with the Job manager via RPC and the JM UI shows the tasks statuses for jobs deployed at the TM.
