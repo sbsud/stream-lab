@@ -1,7 +1,22 @@
+COMPOSE = docker compose --env-file .env -f platform/docker-compose.yaml
+
 up:
-	docker compose --env-file .env -f platform/docker-compose.yaml up -d
-down:	
-	docker compose --env-file .env -f platform/docker-compose.yaml down -v
+	$(COMPOSE) up -d $(S)
+
+down:
+	$(COMPOSE) down $(S)
+
+nuke:
+	$(COMPOSE) down -v
+
+stop:
+	$(COMPOSE) stop $(S)
+
+logs:
+	$(COMPOSE) logs -f $(S)
+
+ps:
+	$(COMPOSE) ps
 load:	
 	echo "to be implemented"
 vwap:
