@@ -1,7 +1,7 @@
 services:
   broker:
     image: confluentinc/cp-kafka:7.8.0
-    hostname: kafka
+    hostname: broker
     container_name: kafka_cont
     ports:
       - "${KAFKA_BROKER_PORT}:9092"
@@ -14,11 +14,29 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT'
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'  
       KAFKA_JMX_PORT: 9999
     volumes:
       - kafka-data:/var/lib/kafka/data
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.8.0
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - broker
+    ports: ["${SCHEMA_REGISTRY_PORT}:8081"]
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker:29092'
+      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: 'PLAINTEXT'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+  
 
 volumes:
   kafka-data:
