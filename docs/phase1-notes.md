@@ -87,3 +87,5 @@ Flink taskmanagers do not need an external port-mapping as the taskmanager commu
 Using the KafkaAvroSerializer with the schema-registry config while producing messages allows a registry-configured consumer to deserialize the messages from the kafka topic. Using a custom serializer results in valid Avro, but the registry-aware consumer was not able to retrieve the schema-registry framing.
 
 chose double for phase 1; the correct financial type is Avro decimal logical type → BigDecimal → Flink DECIMAL(18,4); the reason is accumulation error in summation, not the cosmetic display expansion
+
+Determinism verified by diffing two runs — identical except event_time, which is correct because event time is wall-clock and shouldn't be seeded. lateness and field values draw from one sequence, so reproducibility holds within a config but not across configs.
