@@ -9,6 +9,7 @@ symbols:
   - GGGG
   - HHHH
 latePercent: 10
-maxLatenessMs: 20
-totalMessages: 1000
-topicName: trades-topic
+maxLatenessMs: 60000
+totalMessages: 50
+topicName: trades
+randomSeed: 79
