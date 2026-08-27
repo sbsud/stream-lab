@@ -88,4 +88,4 @@ Using the KafkaAvroSerializer with the schema-registry config while producing me
 
 chose double for phase 1; the correct financial type is Avro decimal logical type → BigDecimal → Flink DECIMAL(18,4); the reason is accumulation error in summation, not the cosmetic display expansion
 
-Determinism verified by diffing two runs — identical except event_time, which is correct because event time is wall-clock and shouldn't be seeded. lateness and field values draw from one sequence, so reproducibility holds within a config but not across configs.
+Compiles-in-IDE-fails-in-build — two-arg Random.nextInt(origin, bound) is JDK 17+, the build was pinned to Java 8, IDE used the project SDK. "Compiles in IDE, fails in Maven" = different language levels.. Determinism verified by diffing two runs — identical except event_time, which is correct because event time is wall-clock and shouldn't be seeded. lateness and field values draw from one sequence, so reproducibility holds within a config but not across configs.
