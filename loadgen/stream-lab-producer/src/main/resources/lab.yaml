@@ -1,0 +1,14 @@
+recordsRate: 2000
+symbols:
+  - AAAA
+  - BBBB
+  - CCCC
+  - DDDD
+  - EEEE
+  - FFFF
+  - GGGG
+  - HHHH
+latePercent: 10
+maxLatenessMs: 20
+totalMessages: 1000
+topicName: trades-topic

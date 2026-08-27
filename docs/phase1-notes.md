@@ -83,3 +83,7 @@ Note the Leader: 1 and Replicas:1.
 Leader: 1 means broker 1 owns it and it can serve. Leader: none or Leader: -1 means no broker could take it.
 
 Flink taskmanagers do not need an external port-mapping as the taskmanager communicates with the Job manager via RPC and the JM UI shows the tasks statuses for jobs deployed at the TM.
+
+Using the KafkaAvroSerializer with the schema-registry config while producing messages allows a registry-configured consumer to deserialize the messages from the kafka topic. Using a custom serializer results in valid Avro, but the registry-aware consumer was not able to retrieve the schema-registry framing.
+
+chose double for phase 1; the correct financial type is Avro decimal logical type → BigDecimal → Flink DECIMAL(18,4); the reason is accumulation error in summation, not the cosmetic display expansion
