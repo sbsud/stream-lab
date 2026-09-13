@@ -16,7 +16,7 @@ logs:
 	$(COMPOSE) logs -f $(S)
 
 topic:
-	$(COMPOSE) exec broker kafka-topics --bootstrap-server broker:29092 --create --topic $(S) -partitions 4 --replication-factor 1
+	$(COMPOSE) exec broker kafka-topics --bootstrap-server broker:29092 --create --topic $(S) --partitions 4 --replication-factor 1
 
 ps:
 	$(COMPOSE) ps

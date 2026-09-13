@@ -59,6 +59,7 @@ services:
         metrics.reporter.prom.port: 9249
     volumes:
       - flink-checkpoints:/opt/flink/checkpoints
+      - jobs:/opt/flink/jobs
 
   taskmanager:
     build:
@@ -83,3 +84,4 @@ services:
 volumes:
   kafka-data:
   flink-checkpoints:
+  jobs:
