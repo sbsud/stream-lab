@@ -1,0 +1,15 @@
+recordsRate: 100
+symbols:
+  - AAAA
+  - BBBB
+  - CCCC
+  - DDDD
+  - EEEE
+  - FFFF
+  - GGGG
+  - HHHH
+latePercent: 15
+maxLatenessMs: 90000
+totalMessages: 10000
+topicName: trades
+randomSeed: 79

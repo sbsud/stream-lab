@@ -15,9 +15,12 @@ stop:
 logs:
 	$(COMPOSE) logs -f $(S)
 
+topic:
+	$(COMPOSE) exec broker kafka-topics --bootstrap-server broker:29092 --create --topic $(S) -partitions 4 --replication-factor 1
+
 ps:
 	$(COMPOSE) ps
 load:	
-	echo "to be implemented"
-vwap:
-	echo "to be implemented"
+	cd loadgen/stream-lab-producer && mvn -q compile exec:java -Dexec.mainClass=TradesProducer
+
+	
