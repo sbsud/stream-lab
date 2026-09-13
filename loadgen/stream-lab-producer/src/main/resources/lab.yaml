@@ -1,4 +1,4 @@
-recordsRate: 2000
+recordsRate: 100
 symbols:
   - AAAA
   - BBBB
@@ -8,8 +8,8 @@ symbols:
   - FFFF
   - GGGG
   - HHHH
-latePercent: 10
-maxLatenessMs: 60000
-totalMessages: 1000
+latePercent: 15
+maxLatenessMs: 90000
+totalMessages: 10000
 topicName: trades
 randomSeed: 79

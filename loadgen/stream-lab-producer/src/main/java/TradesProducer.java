@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class TradesProducer {
     public static void main(String[] args) {
@@ -30,9 +31,16 @@ public class TradesProducer {
 
         int randomSeed = (int) labProps.get("randomSeed");
         Random seededRand = new Random(randomSeed);
-
+        long gap = 1_000_000_000L / recordsRate;
+        long startTime = System.nanoTime();
         try (Producer<String, Trade> kafkaProducer = new KafkaProducer<>(props)) {
+            long startMeter = System.nanoTime();
             for (int i = 0; i < countMessages; i++) {
+                long targetTime = startTime + i * gap;
+                long waitNanos = targetTime - System.nanoTime();
+                if (waitNanos > 0) {
+                    TimeUnit.NANOSECONDS.sleep(waitNanos);
+                }
                 String sym = symbols[i % symbols.length];
                 double price = getPrice(1.0, 1000.0, 3, seededRand);
                 int qty = seededRand.nextInt(1, 1000);
@@ -48,6 +56,9 @@ public class TradesProducer {
                 kafkaProducer.send(new ProducerRecord<>(topic, trade.getSymbol().toString(), trade));
 
             }
+            System.out.println("Elapsed time == " + (System.nanoTime() - startMeter) / 1_000_000_000.0 + "s");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
