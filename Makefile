@@ -23,4 +23,8 @@ ps:
 load:	
 	cd loadgen/stream-lab-producer && mvn -q compile exec:java -Dexec.mainClass=TradesProducer
 
+
+fsql:
+	$(COMPOSE) exec jobmanager ./bin/sql-client.sh
+
 	
