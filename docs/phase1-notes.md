@@ -89,3 +89,39 @@ Using the KafkaAvroSerializer with the schema-registry config while producing me
 chose double for phase 1; the correct financial type is Avro decimal logical type → BigDecimal → Flink DECIMAL(18,4); the reason is accumulation error in summation, not the cosmetic display expansion
 
 Compiles-in-IDE-fails-in-build — two-arg Random.nextInt(origin, bound) is JDK 17+, the build was pinned to Java 8, IDE used the project SDK. "Compiles in IDE, fails in Maven" = different language levels.. Determinism verified by diffing two runs — identical except event_time, which is correct because event time is wall-clock and shouldn't be seeded. lateness and field values draw from one sequence, so reproducibility holds within a config but not across configs.
+
+## Phase 1 acceptance test — final result
+
+- Acceptance test symbol/window: `CCCC`, window `2026-09-14 15:09:00–15:10:00`
+- True membership for that window (via kcat against the raw topic): 773 records
+- Processing-time VWAP: 502.96 (late-record concept doesn't apply — n/a)
+- Event-time, 10s slack: VWAP 501.19, captured 701 of 773 records, 72 dropped
+- Event-time, 60s slack: VWAP 509.59, captured all 773 records, 0 dropped
+- Late-record count per window is not exposed directly by Flink SQL; derived by adding `COUNT(*)` to each windowed query and subtracting from an independently-counted kcat total filtered to that symbol and event-time range
+
+## Partition/parallelism mismatch (watermark stall)
+
+- A topic created with fewer partitions than the job's parallelism leaves some source subtasks permanently unassigned — not idle, structurally empty, since there's no partition behind them
+- A subtask that has never processed a record never produces a watermark at all, since a watermark generator has nothing to compute from
+- `GROUP BY` executes as local pre-aggregate → hash shuffle (by key) → global aggregate; because a hash shuffle can route any key to any downstream subtask, every global subtask keeps a permanent input channel from every local subtask
+- A downstream operator's combined watermark is the minimum across all its input channels, including ones that have never delivered anything — so 3 permanently-silent channels freeze every global subtask, for every key, not just the ones fed by the empty partitions
+- `idle-timeout` doesn't fix this case — it's for a real partition that's temporarily quiet; there's no data source behind a genuinely unassigned subtask to time out from
+- Fix: recreate the topic with partition count ≥ job parallelism
+- `PROCTIME` windows are unaffected by this entire mechanism — they fire on each subtask's own wall-clock timer, with no watermark propagation or cross-subtask coordination at all, which is why the same broken 1-partition topic produced correct proctime output but frozen event-time output
+
+## Concurrent jobs and task slots
+
+- Running N Flink jobs concurrently needs (parallelism × N) ≤ total task slots in the cluster, or the excess jobs sit in `RESTARTING` with `NoResourceAvailableException` — a scheduling failure, not a data/query problem
+- Fix for running several small comparison queries on a small cluster: `SET 'parallelism.default' = '1'` per session before creating that session's table
+- Lowering parallelism doesn't affect correctness for a small topic — one subtask can read multiple Kafka partitions fine, just serially instead of in parallel
+
+## Operational gotchas
+
+- Schema Registry: the default RF-3 replication factor for `__consumer_offsets` can cause silent timeouts in single-broker lab setups — a non-obvious failure mode worth documenting early
+- Rate pacing: absolute nanosecond scheduling is more accurate than fixed-gap sleep for high-rate load generation; determinism can be verified by diffing two runs
+- Kafka topic deletion is asynchronous (`--delete` marks for removal, doesn't block until gone) — an immediate `--create` can hit `TopicExistsException`; poll `--list` until the topic disappears, or just recreate the whole platform volume for a clean slate
+- `WATERMARK FOR <col>` requires `<col>` to be `TIMESTAMP`/`TIMESTAMP_LTZ`-typed, not a raw numeric epoch field — an epoch-millis `BIGINT` needs a computed column via `TO_TIMESTAMP_LTZ(col, 3)` first
+- A table can carry both a `PROCTIME()` computed column and a watermarked event-time column at once; different queries can window on either — but each query becomes an independent Kafka consumer job, and two sharing one `group.id` concurrently will split partitions between them rather than each reading the full topic
+- Flink SQL's default catalog is in-memory and session-scoped — a `CREATE TABLE` from one CLI invocation doesn't exist in the next; every session that needs a table must recreate it
+- `sql-client.sh -f <file>` is reliable for running `.sql` files; the interactive `SOURCE <file>` command is fragile and should be avoided
+- Backlog replay under `PROCTIME` can collapse a long original production timeline into one processing-time window, since `proc_time` reflects when Flink reads a record, not when it was produced, and Flink reads a Kafka backlog far faster than the original production rate
