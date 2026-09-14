@@ -3,3 +3,4 @@ loadgen/stream-lab-producer/.idea/.gitignore
 loadgen/stream-lab-producer/.idea/encodings.xml
 loadgen/stream-lab-producer/.idea/misc.xml
 loadgen/stream-lab-producer/.idea/vcs.xml
+jobs/event-time-vwap/scratch-file.sql
