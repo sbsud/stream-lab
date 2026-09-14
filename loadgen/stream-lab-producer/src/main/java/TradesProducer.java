@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TradesProducer {
     public static void main(String[] args) {
+        System.setProperty("org.apache.avro.SERIALIZABLE_PACKAGES", "com.tradestream");
         Properties props = getProperties();
         Map<String, Object> labProps = getYamlProps();
         String[] symbols = getSymbols(labProps);
@@ -66,6 +67,7 @@ public class TradesProducer {
         long now = System.currentTimeMillis();
         if(seededRandom.nextInt(100) < latePct) {
             now = now - seededRandom.nextLong(0, maxLateNess);
+            System.out.println(msgNumber + "--> LATE");
         }
         return now;
     }
