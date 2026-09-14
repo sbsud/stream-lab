@@ -54,7 +54,7 @@ services:
         parallelism.default: 4
         state.backend: rocksdb
         state.checkpoints.dir: file:///opt/flink/checkpoints
-        execution.checkpointing.interval: 10000
+        execution.checkpointing.interval: 1000
         metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
         metrics.reporter.prom.port: 9249
     volumes:
