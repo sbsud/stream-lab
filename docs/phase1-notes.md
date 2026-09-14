@@ -1,10 +1,10 @@
 # Acceptance tests
 
-|Config|vwap (ACME 10:00-10-01)|Late records counted|
+|Config|VWAP(CCCC, 15:09–15:10)|Late records counted|
 |---|---|---|
-|Processing time||n/a|
-|Event time 10s watermark slack|||
-|Event time 60s watermark slack|||
+|Processing time|502.96|n/a|
+|Event time 10s watermark slack|501.19|72 out of 773 dropped|
+|Event time 60s watermark slack|509.59|0 dropped|
 
 
 **Success** Three numbers differ and the difference shrinks as the water mark slack increases. If the Processing time and event time agree then there is something wrong with the lateness injector and the code cannot be trusted.
