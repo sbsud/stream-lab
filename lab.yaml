@@ -10,6 +10,6 @@ symbols:
   - HHHH
 latePercent: 15
 maxLatenessMs: 90000
-totalMessages: 10000
+totalMessages: 30000
 topicName: trades
 randomSeed: 79
