@@ -21,6 +21,15 @@ create_topic:
 delete_topic:
 	$(COMPOSE) exec broker kafka-topics --bootstrap-server broker:29092 --delete --topic $(S)
 
+list_topic:
+	$(COMPOSE) exec broker kafka-topics --bootstrap-server broker:29092 --list
+
+register_schema:
+	schemas/register_schema.sh schemas/$(S).avsc $(S)-value
+
+schema_subjects:
+	$(COMPOSE) exec broker curl -w "\n" -sS http://schema-registry:8081/subjects
+
 ps:
 	$(COMPOSE) ps
 
