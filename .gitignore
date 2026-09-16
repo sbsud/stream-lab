@@ -6,3 +6,4 @@ loadgen/stream-lab-producer/.idea/vcs.xml
 jobs/event-time-vwap/scratch-file.sql
 load_run.log
 .env
+rough
