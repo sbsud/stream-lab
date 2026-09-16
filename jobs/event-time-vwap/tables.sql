@@ -1,47 +1,6 @@
--- CREATE TABLE trades (
---     symbol STRING,
---     quantity BIGINT,
---     price DOUBLE,
---     side STRING,
---     event_time BIGINT,
---     proc_time AS PROCTIME()
--- ) WITH (
---     'connector'='kafka',
---     'topic' = 'trades',
---     'properties.bootstrap.servers' = 'broker:29092',
---     'properties.group.id' = 'flink-vwap-reader',
---     -- 'scan.startup.mode' = 'earliest-offset',    
---     'key.format' = 'raw',
---     'key.fields' = 'symbol',
---     'value.format' = 'avro-confluent',
---     'value.avro-confluent.schema-registry.url' = 'http://schema-registry:8081',
---     'value.fields-include' = 'ALL'
--- )
-
--- CREATE TABLE trades (
---     symbol STRING,
---     quantity BIGINT,
---     price DOUBLE,
---     side STRING,
---     event_time BIGINT,
---     proc_time AS PROCTIME(),
---     event_ts AS TO_TIMESTAMP_LTZ(event_time, 3),
---     WATERMARK FOR event_ts AS event_ts - INTERVAL '10' SECOND
--- ) WITH (
---     'connector'='kafka',
---     'topic' = 'trades',
---     'properties.bootstrap.servers' = 'broker:29092',
---     'properties.group.id' = 'flink-vwap-reader',
---     'scan.startup.mode' = 'earliest-offset',    
---     'key.format' = 'raw',
---     'key.fields' = 'symbol',
---     'value.format' = 'avro-confluent',
---     'value.avro-confluent.schema-registry.url' = 'http://schema-registry:8081',
---     'value.fields-include' = 'ALL'
--- )
-
-
-
+-------------------------------------------------------------------------------------
+--A reference of table DDLs that were used in this lab. As of now manually executed.
+-------------------------------------------------------------------------------------
 
 -- Table 1: proctime
 CREATE TABLE trades_proc (
@@ -51,7 +10,7 @@ CREATE TABLE trades_proc (
     'connector'='kafka', 
     'topic' = 'trades',
     'properties.bootstrap.servers' = 'broker:29092',
-    'properties.group.id' = 'flink-vwap-proctime',
+    'properties.group.id' = 'flink-vwap-proctime-2026-09-15_20-51',
     'scan.startup.mode' = 'earliest-offset',
     'key.format' = 'raw', 
     'key.fields' = 'symbol',
@@ -69,7 +28,7 @@ CREATE TABLE trades_evt10 (
     'connector'='kafka', 
     'topic' = 'trades',
     'properties.bootstrap.servers' = 'broker:29092',
-    'properties.group.id' = 'flink-vwap-event10s',
+    'properties.group.id' = 'flink-vwap-event10s-2026-09-15_20-51',
     'scan.startup.mode' = 'earliest-offset',
     'key.format' = 'raw', 
     'key.fields' = 'symbol',
@@ -87,7 +46,7 @@ CREATE TABLE trades_evt60 (
     'connector'='kafka', 
     'topic' = 'trades',
     'properties.bootstrap.servers' = 'broker:29092',
-    'properties.group.id' = 'flink-vwap-event60s',
+    'properties.group.id' = 'flink-vwap-event60s-2026-09-15_20-51',
     'scan.startup.mode' = 'earliest-offset',
     'key.format' = 'raw', 
     'key.fields' = 'symbol',
